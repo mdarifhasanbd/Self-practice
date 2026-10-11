@@ -30,5 +30,44 @@
 </div>
 
 <script src="assets/app.js"></script>
+
+<!-- ডায়নামিক গিটহাব ফাইল অটো-স্ক্যানার স্ক্রিপ্ট -->
+<script>
+  // বর্তমান loadAll ফাংশনটিকে অটো-স্ক্যানার দিয়ে ওভাররাইড করা হলো
+  const originalLoadAll = window.loadAll;
+  
+  window.loadAll = async function() {
+    if (!window.__PB_PRELOADED) {
+      await loadScript('data/index.js');
+      if (!window.PB || !PB.collections) throw new Error('data/index.js লোড হয়নি');
+
+      let dataFiles = PB.collections.map(c => 'data/' + c.id + '.js');
+
+      try {
+        // GitHub API ব্যবহার করে data/ ফোল্ডারের সব .js ফাইল অটোমেটিক স্ক্যান করবে
+        const pathSegments = location.pathname.split('/').filter(Boolean);
+        const repoPath = pathSegments[0] || '';
+        const owner = location.hostname.split('.')[0];
+
+        if (owner && repoPath) {
+          const apiUrl = `https://api.github.com/repos/${owner}/${repoPath}/contents/data`;
+          const res = await fetch(apiUrl);
+          if (res.ok) {
+            const files = await res.json();
+            const autoFiles = files
+              .filter(f => f.name.endsWith('.js') && f.name !== 'index.js')
+              .map(f => 'data/' + f.name);
+            dataFiles = Array.from(new Set([...dataFiles, ...autoFiles]));
+          }
+        }
+      } catch (e) {
+        console.warn('অটো-স্ক্যান করা যায়নি, ডিফল্ট ফাইল লোড হচ্ছে:', e);
+      }
+
+      await Promise.all(dataFiles.map(src => loadScript(src)));
+    }
+    return normalize();
+  };
+</script>
 </body>
 </html>
