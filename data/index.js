@@ -110,10 +110,9 @@ PB.collections = [
       { id: "y2025", title: "২০২৫" },
       { id: "monthly", title: "মাসিক" },
     ] },
-  { id: "Exam Batch(Library)", icon: "🎓", title: "Exam Batch(Library)", desc: "Exam Batch(Library)",
+  { id: "admission", icon: "🎓", title: "Exam Batch(Library)", desc: "লাইব্রেরি এক্সাম ব্যাচ",
     subs: [
       { id: "college", title: "Exam Batch(Library)" },
-     
     ] },
   { id: "ssc-hsc", icon: "📚", title: "এসএসসি – এইচএসসি", desc: "বোর্ড পরীক্ষার MCQ",
     subs: [
